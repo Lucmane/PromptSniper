@@ -1,4 +1,18 @@
-import logging import os import json import tempfile from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes from gradio_client import Client
+import logging
+import os
+import json
+import tempfile
+
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    MessageHandler,
+    CallbackQueryHandler,
+    ContextTypes,
+    filters
+)
+from gradio_client import Client
 
 ============ CONFIG ============
 
