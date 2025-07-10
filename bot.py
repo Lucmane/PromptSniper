@@ -14,17 +14,17 @@ from telegram.ext import (
 )
 from gradio_client import Client
 
-============ CONFIG ============
+# ============ CONFIG ============
 
 TELEGRAM_TOKEN = "7853973479:AAFH_1G40ULASUznLAOOglJCd0zyg5xPnd8" CLIP_API_URL = "https://pharmapsychotic-clip-interrogator.hf.space/" CLIP_MODEL = "ViT-L (best for Stable Diffusion 1.*)" CLIP_MODE = "best" CHANNEL_USERNAME = "@ctrl_future" USER_DB_PATH = "users.json"
 
 client = Client(CLIP_API_URL)
 
-============ LOGGING ============
+# ============ LOGGING ============
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO) logger = logging.getLogger(name)
 
-============ UTILS ============
+# ============ UTILS ============
 
 def load_users(): if os.path.exists(USER_DB_PATH): with open(USER_DB_PATH, 'r') as f: return set(json.load(f)) return set()
 
@@ -32,7 +32,7 @@ def save_users(users): with open(USER_DB_PATH, 'w') as f: json.dump(list(users),
 
 verified_users = load_users()
 
-============ BOT COMMANDS ============
+# ============ BOT COMMANDS ============
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE): user_id = update.effective_user.id if user_id in verified_users: await update.message.reply_text("✅ Tu es déjà vérifié. Envoie-moi une image pour générer un prompt !") return
 
@@ -95,7 +95,7 @@ except Exception as e:
 
 async def handle_other(update: Update, context: ContextTypes.DEFAULT_TYPE): await update.message.reply_text("⚠️ Je ne fonctionne qu’avec des images. Envoie-moi une photo pour générer un prompt !")
 
-============ MAIN ============
+# ============ MAIN ============
 
 def main(): app = Application.builder().token(TELEGRAM_TOKEN).build()
 
