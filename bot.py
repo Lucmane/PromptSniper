@@ -1,30 +1,18 @@
-import logging
-import os
-import json
-import tempfile
+import logging import os import json import tempfile
 
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import (
-    Application,
-    CommandHandler,
-    MessageHandler,
-    CallbackQueryHandler,
-    ContextTypes,
-    filters
-)
-from gradio_client import Client
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup from telegram.ext import ( Application, CommandHandler, MessageHandler, CallbackQueryHandler, ContextTypes, filters ) from gradio_client import Client
 
-# ============ CONFIG ============
+============ CONFIG ============
 
-TELEGRAM_TOKEN = "7853973479:AAFH_1G40ULASUznLAOOglJCd0zyg5xPnd8" CLIP_API_URL = "https://pharmapsychotic-clip-interrogator.hf.space/" CLIP_MODEL = "ViT-L (best for Stable Diffusion 1.*)" CLIP_MODE = "best" CHANNEL_USERNAME = "@ctrl_future" USER_DB_PATH = "users.json"
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN") CLIP_API_URL = os.getenv("GRADIO_ENDPOINT") CLIP_MODEL = "ViT-L (best for Stable Diffusion 1.*)" CLIP_MODE = "best" CHANNEL_USERNAME = "@ctrl_future" USER_DB_PATH = "users.json"
 
 client = Client(CLIP_API_URL)
 
-# ============ LOGGING ============
+============ LOGGING ============
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO) logger = logging.getLogger(name)
+logging.basicConfig( format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO ) logger = logging.getLogger(name)
 
-# ============ UTILS ============
+============ UTILS ============
 
 def load_users(): if os.path.exists(USER_DB_PATH): with open(USER_DB_PATH, 'r') as f: return set(json.load(f)) return set()
 
@@ -32,7 +20,7 @@ def save_users(users): with open(USER_DB_PATH, 'w') as f: json.dump(list(users),
 
 verified_users = load_users()
 
-# ============ BOT COMMANDS ============
+============ BOT COMMANDS ============
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE): user_id = update.effective_user.id if user_id in verified_users: await update.message.reply_text("✅ Tu es déjà vérifié. Envoie-moi une image pour générer un prompt !") return
 
@@ -54,12 +42,15 @@ try:
         save_users(verified_users)
         await query.edit_message_text("✅ Vérifié avec succès ! Envoie-moi une image pour sniper un prompt !")
     else:
-        await query.edit_message_text("❌ Tu n'as pas encore rejoint le canal. Rejoins [CTRL+FUTURE](https://t.me/ctrl_future) puis réessaie.", parse_mode='Markdown')
+        await query.edit_message_text(
+            "❌ Tu n'as pas encore rejoint le canal. Rejoins [CTRL+FUTURE](https://t.me/ctrl_future) puis réessaie.",
+            parse_mode='Markdown'
+        )
 except Exception as e:
     logger.error(e)
     await query.edit_message_text("❌ Erreur lors de la vérification. Réessaie plus tard.")
 
-async def handle_image(update: Update, context: ContextTypes.DEFAULT_TYPE): user_id = update.effective_user.id if user_id not in verified_users: await update.message.reply_text("🔐 Tu dois rejoindre notre canal CTRL+FUTURE pour utiliser ce bot.", parse_mode='Markdown') return
+async def handle_image(update: Update, context: ContextTypes.DEFAULT_TYPE): user_id = update.effective_user.id if user_id not in verified_users: await update.message.reply_text( "🔐 Tu dois rejoindre notre canal CTRL+FUTURE pour utiliser ce bot.", parse_mode='Markdown' ) return
 
 try:
     photo_file = await update.message.photo[-1].get_file()
@@ -95,7 +86,7 @@ except Exception as e:
 
 async def handle_other(update: Update, context: ContextTypes.DEFAULT_TYPE): await update.message.reply_text("⚠️ Je ne fonctionne qu’avec des images. Envoie-moi une photo pour générer un prompt !")
 
-# ============ MAIN ============
+============ MAIN ============
 
 def main(): app = Application.builder().token(TELEGRAM_TOKEN).build()
 
@@ -108,4 +99,3 @@ logger.info("🤖 PromptSniper is live and hunting...")
 app.run_polling()
 
 if name == "main": main()
-
